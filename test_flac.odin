@@ -1,8 +1,5 @@
 package flac
 
-//import "core:bytes"
-//import "core:fmt"
-//import "core:runtime"
 import _t "core:testing"
 import _u "shared:ounit"
 
