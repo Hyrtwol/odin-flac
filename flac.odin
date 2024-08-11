@@ -44,7 +44,7 @@ FLAC__MAX_RICE_PARTITION_ORDER :: 15
 FLAC__SUBSET_MAX_RICE_PARTITION_ORDER :: 8
 
 
-FLAC__EntropyCodingMethodType :: enum {
+FLAC__EntropyCodingMethodType :: enum uint32_t {
 	/**< Residual is coded by partitioning into contexts, each with it's own
 	* 4-bit Rice parameter. */
 	FLAC__ENTROPY_CODING_METHOD_PARTITIONED_RICE  = 0,
@@ -83,7 +83,7 @@ FLAC__EntropyCodingMethod :: struct {
 	},
 }
 
-FLAC__SubframeType :: enum {
+FLAC__SubframeType :: enum uint32_t {
 	FLAC__SUBFRAME_TYPE_CONSTANT = 0, /**< constant signal */
 	FLAC__SUBFRAME_TYPE_VERBATIM = 1, /**< uncompressed signal */
 	FLAC__SUBFRAME_TYPE_FIXED    = 2, /**< fixed polynomial prediction */
@@ -92,7 +92,7 @@ FLAC__SubframeType :: enum {
 FLAC__Subframe_Constant :: struct {
 	value: FLAC__int64, /**< The constant signal value. */
 }
-FLAC__VerbatimSubframeDataType :: enum {
+FLAC__VerbatimSubframeDataType :: enum uint32_t {
 	FLAC__VERBATIM_SUBFRAME_DATA_TYPE_INT32, /**< verbatim subframe has 32-bit int */
 	FLAC__VERBATIM_SUBFRAME_DATA_TYPE_INT64, /**< verbatim subframe has 64-bit int */
 }
@@ -149,13 +149,13 @@ FLAC__Subframe :: struct {
 	wasted_bits: uint32_t,
 }
 
-FLAC__ChannelAssignment :: enum {
+FLAC__ChannelAssignment :: enum uint32_t {
 	FLAC__CHANNEL_ASSIGNMENT_INDEPENDENT = 0, /**< independent channels */
 	FLAC__CHANNEL_ASSIGNMENT_LEFT_SIDE   = 1, /**< left+side stereo */
 	FLAC__CHANNEL_ASSIGNMENT_RIGHT_SIDE  = 2, /**< right+side stereo */
 	FLAC__CHANNEL_ASSIGNMENT_MID_SIDE    = 3, /**< mid+side stereo */
 }
-FLAC__FrameNumberType :: enum {
+FLAC__FrameNumberType :: enum uint32_t {
 	FLAC__FRAME_NUMBER_TYPE_FRAME_NUMBER, /**< number contains the frame number */
 	FLAC__FRAME_NUMBER_TYPE_SAMPLE_NUMBER, /**< number contains the sample number of first sample in frame */
 }
@@ -198,7 +198,7 @@ FLAC__Frame :: struct {
 	footer:    FLAC__FrameFooter,
 }
 
-FLAC__MetadataType :: enum {
+FLAC__MetadataType :: enum uint32_t {
 	/**< <A HREF="https://xiph.org/flac/format.html#metadata_block_streaminfo">STREAMINFO</A> block */
 	FLAC__METADATA_TYPE_STREAMINFO     = 0,
 
@@ -327,7 +327,7 @@ FLAC__StreamMetadata_CueSheet :: struct {
 	tracks:               ^FLAC__StreamMetadata_CueSheet_Track,
 }
 // FLAC__STREAM_METADATA_PICTURE_TYPE
-FLAC__StreamMetadata_Picture_Type :: enum {
+FLAC__StreamMetadata_Picture_Type :: enum uint32_t {
 	OTHER = 0, /**< Other */
 	FILE_ICON_STANDARD = 1, /**< 32x32 pixels 'file icon' (PNG only) */
 	FILE_ICON = 2, /**< Other file icon */
@@ -420,23 +420,6 @@ FLAC__StreamMetadata :: struct {
 	},
 }
 
-//typedef FLAC__StreamDecoderReadStatus (*FLAC__StreamDecoderReadCallback)(const FLAC__StreamDecoder *decoder, FLAC__byte buffer[], size_t *bytes, void *client_data);
-FLAC__StreamDecoderReadCallback :: #type proc "c" (decoder: ^FLAC__StreamDecoder, buffer: []FLAC__byte, bytes: ^size_t, client_data: rawptr) -> FLAC__StreamDecoderReadStatus
-//typedef FLAC__StreamDecoderSeekStatus (*FLAC__StreamDecoderSeekCallback)(const FLAC__StreamDecoder *decoder, FLAC__uint64 absolute_byte_offset, void *client_data);
-FLAC__StreamDecoderSeekCallback :: #type proc "c" (decoder: ^FLAC__StreamDecoder, absolute_byte_offset: FLAC__uint64, client_data: rawptr) -> FLAC__StreamDecoderSeekStatus
-//typedef FLAC__StreamDecoderTellStatus (*FLAC__StreamDecoderTellCallback)(const FLAC__StreamDecoder *decoder, FLAC__uint64 *absolute_byte_offset, void *client_data);
-FLAC__StreamDecoderTellCallback :: #type proc "c" (decoder: ^FLAC__StreamDecoder, absolute_byte_offset: FLAC__uint64, client_data: rawptr) -> FLAC__StreamDecoderTellStatus
-//typedef FLAC__StreamDecoderLengthStatus (*FLAC__StreamDecoderLengthCallback)(const FLAC__StreamDecoder *decoder, FLAC__uint64 *stream_length, void *client_data);
-FLAC__StreamDecoderLengthCallback :: #type proc "c" (decoder: ^FLAC__StreamDecoder, stream_length: FLAC__uint64, client_data: rawptr) -> FLAC__StreamDecoderLengthStatus
-//typedef FLAC__bool (*FLAC__StreamDecoderEofCallback)(const FLAC__StreamDecoder *decoder, void *client_data);
-FLAC__StreamDecoderEofCallback :: #type proc "c" (decoder: ^FLAC__StreamDecoder, client_data: rawptr) -> FLAC__bool
-//typedef FLAC__StreamDecoderWriteStatus (*FLAC__StreamDecoderWriteCallback)(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame, const FLAC__int32 * const buffer[], void *client_data);
-FLAC__StreamDecoderWriteCallback :: #type proc "c" (decoder: ^FLAC__StreamDecoder, frame: ^FLAC__Frame, buffer: []FLAC__int32, client_data: rawptr) -> FLAC__StreamDecoderWriteStatus
-//typedef void (*FLAC__StreamDecoderMetadataCallback)(const FLAC__StreamDecoder *decoder, const FLAC__StreamMetadata *metadata, void *client_data);
-FLAC__StreamDecoderMetadataCallback :: #type proc "c" (decoder: ^FLAC__StreamDecoder, metadata: ^FLAC__StreamMetadata, client_data: rawptr)
-//typedef void (*FLAC__StreamDecoderErrorCallback)(const FLAC__StreamDecoder *decoder, FLAC__StreamDecoderErrorStatus status, void *client_data);
-FLAC__StreamDecoderErrorCallback :: #type proc "c" (decoder: ^FLAC__StreamDecoder, status: FLAC__StreamDecoderErrorStatus, client_data: rawptr)
-
 @(default_calling_convention = "c")
 foreign flac_lib {
 	//@(link_name="FLAC__VERSION_STRING")
@@ -467,9 +450,79 @@ foreign flac_lib {
 	FLAC__stream_decoder_get_client_data :: proc(decoder: ^FLAC__StreamDecoder) -> rawptr ---
 
 	FLAC__stream_decoder_init_stream :: proc(decoder: ^FLAC__StreamDecoder, read_callback: FLAC__StreamDecoderReadCallback, seek_callback: FLAC__StreamDecoderSeekCallback, tell_callback: FLAC__StreamDecoderTellCallback, length_callback: FLAC__StreamDecoderLengthCallback, eof_callback: FLAC__StreamDecoderEofCallback, write_callback: FLAC__StreamDecoderWriteCallback, metadata_callback: FLAC__StreamDecoderMetadataCallback, error_callback: FLAC__StreamDecoderErrorCallback, client_data: rawptr) -> FLAC__StreamDecoderInitStatus ---
+	FLAC__stream_decoder_init_ogg_stream :: proc(decoder: ^FLAC__StreamDecoder, read_callback: FLAC__StreamDecoderReadCallback, seek_callback: FLAC__StreamDecoderSeekCallback, tell_callback: FLAC__StreamDecoderTellCallback, length_callback: FLAC__StreamDecoderLengthCallback, eof_callback: FLAC__StreamDecoderEofCallback, write_callback: FLAC__StreamDecoderWriteCallback, metadata_callback: FLAC__StreamDecoderMetadataCallback, error_callback: FLAC__StreamDecoderErrorCallback, client_data: rawptr) -> FLAC__StreamDecoderInitStatus ---
+	FLAC__stream_decoder_init_FILE :: proc(decoder: ^FLAC__StreamDecoder, file: FILE, write_callback: FLAC__StreamDecoderWriteCallback, metadata_callback: FLAC__StreamDecoderMetadataCallback, error_callback: FLAC__StreamDecoderErrorCallback, client_data: rawptr) -> FLAC__StreamDecoderInitStatus ---
+	FLAC__stream_decoder_init_ogg_FILE :: proc(decoder: ^FLAC__StreamDecoder, file: FILE, write_callback: FLAC__StreamDecoderWriteCallback, metadata_callback: FLAC__StreamDecoderMetadataCallback, error_callback: FLAC__StreamDecoderErrorCallback, client_data: rawptr) -> FLAC__StreamDecoderInitStatus ---
+	FLAC__stream_decoder_init_file :: proc(decoder: ^FLAC__StreamDecoder, file: cstring, write_callback: FLAC__StreamDecoderWriteCallback, metadata_callback: FLAC__StreamDecoderMetadataCallback, error_callback: FLAC__StreamDecoderErrorCallback, client_data: rawptr) -> FLAC__StreamDecoderInitStatus ---
+	FLAC__stream_decoder_init_ogg_file :: proc(decoder: ^FLAC__StreamDecoder, file: cstring, write_callback: FLAC__StreamDecoderWriteCallback, metadata_callback: FLAC__StreamDecoderMetadataCallback, error_callback: FLAC__StreamDecoderErrorCallback, client_data: rawptr) -> FLAC__StreamDecoderInitStatus ---
+	FLAC__stream_decoder_finish :: proc(decoder: ^FLAC__StreamDecoder) -> FLAC__bool ---
+	FLAC__stream_decoder_flush :: proc(decoder: ^FLAC__StreamDecoder) -> FLAC__bool ---
+	FLAC__stream_decoder_reset :: proc(decoder: ^FLAC__StreamDecoder) -> FLAC__bool ---
+	FLAC__stream_decoder_process_single :: proc(decoder: ^FLAC__StreamDecoder) -> FLAC__bool ---
+	FLAC__stream_decoder_process_until_end_of_metadata :: proc(decoder: ^FLAC__StreamDecoder) -> FLAC__bool ---
+	FLAC__stream_decoder_process_until_end_of_stream :: proc(decoder: ^FLAC__StreamDecoder) -> FLAC__bool ---
+	FLAC__stream_decoder_skip_single_frame :: proc(decoder: ^FLAC__StreamDecoder) -> FLAC__bool ---
+	FLAC__stream_decoder_seek_absolute :: proc(decoder: ^FLAC__StreamDecoder, sample: FLAC__uint64) -> FLAC__bool ---
 
-	FLAC__stream_decoder_init_FILE :: proc(decoder: ^FLAC__StreamDecoder, file: FILE, write_callback: FLAC__StreamDecoderWriteCallback, metadata_callback: FLAC__StreamDecoderMetadataCallback, error_callback: FLAC__StreamDecoderErrorCallback) -> FLAC__StreamDecoderInitStatus ---
 
 	FLAC__stream_encoder_new :: proc() -> ^FLAC__StreamEncoder ---
 	FLAC__stream_encoder_delete :: proc(encoder: ^FLAC__StreamEncoder) ---
+
+	FLAC__stream_encoder_set_ogg_serial_number :: proc(encoder: ^FLAC__StreamEncoder, serial_number: long) -> FLAC__bool ---
+	FLAC__stream_encoder_set_verify :: proc(encoder: ^FLAC__StreamEncoder, value: FLAC__bool) -> FLAC__bool ---
+	FLAC__stream_encoder_set_streamable_subset :: proc(encoder: ^FLAC__StreamEncoder, value: FLAC__bool) -> FLAC__bool ---
+	FLAC__stream_encoder_set_channels :: proc(encoder: ^FLAC__StreamEncoder, value: uint32_t) -> FLAC__bool ---
+	FLAC__stream_encoder_set_bits_per_sample :: proc(encoder: ^FLAC__StreamEncoder, value: uint32_t) -> FLAC__bool ---
+	FLAC__stream_encoder_set_sample_rate :: proc(encoder: ^FLAC__StreamEncoder, value: uint32_t) -> FLAC__bool ---
+	FLAC__stream_encoder_set_compression_level :: proc(encoder: ^FLAC__StreamEncoder, value: uint32_t) -> FLAC__bool ---
+	FLAC__stream_encoder_set_blocksize :: proc(encoder: ^FLAC__StreamEncoder, value: uint32_t) -> FLAC__bool ---
+	FLAC__stream_encoder_set_do_mid_side_stereo :: proc(encoder: ^FLAC__StreamEncoder, value: FLAC__bool) -> FLAC__bool ---
+	FLAC__stream_encoder_set_loose_mid_side_stereo :: proc(encoder: ^FLAC__StreamEncoder, value: FLAC__bool) -> FLAC__bool ---
+	FLAC__stream_encoder_set_apodization :: proc(encoder: ^FLAC__StreamEncoder, specification: cstring) -> FLAC__bool ---
+	FLAC__stream_encoder_set_max_lpc_order :: proc(encoder: ^FLAC__StreamEncoder, value: uint32_t) -> FLAC__bool ---
+	FLAC__stream_encoder_set_qlp_coeff_precision :: proc(encoder: ^FLAC__StreamEncoder, value: uint32_t) -> FLAC__bool ---
+	FLAC__stream_encoder_set_do_qlp_coeff_prec_search :: proc(encoder: ^FLAC__StreamEncoder, value: FLAC__bool) -> FLAC__bool ---
+	FLAC__stream_encoder_set_do_escape_coding :: proc(encoder: ^FLAC__StreamEncoder, value: FLAC__bool) -> FLAC__bool ---
+	FLAC__stream_encoder_set_do_exhaustive_model_search :: proc(encoder: ^FLAC__StreamEncoder, value: FLAC__bool) -> FLAC__bool ---
+	FLAC__stream_encoder_set_min_residual_partition_order :: proc(encoder: ^FLAC__StreamEncoder, value: uint32_t) -> FLAC__bool ---
+	FLAC__stream_encoder_set_max_residual_partition_order :: proc(encoder: ^FLAC__StreamEncoder, value: uint32_t) -> FLAC__bool ---
+	FLAC__stream_encoder_set_num_threads :: proc(encoder: ^FLAC__StreamEncoder, value: uint32_t) -> uint32_t ---
+	FLAC__stream_encoder_set_rice_parameter_search_dist :: proc(encoder: ^FLAC__StreamEncoder, value: uint32_t) -> FLAC__bool ---
+	FLAC__stream_encoder_set_total_samples_estimate :: proc(encoder: ^FLAC__StreamEncoder, value: FLAC__uint64) -> FLAC__bool ---
+	FLAC__stream_encoder_set_metadata :: proc(encoder: ^FLAC__StreamEncoder, metadata: ^^FLAC__StreamMetadata, num_blocks: uint32_t) -> FLAC__bool ---
+	FLAC__stream_encoder_set_limit_min_bitrate :: proc(encoder: ^FLAC__StreamEncoder, value: FLAC__bool) -> FLAC__bool ---
+	FLAC__stream_encoder_get_state :: proc(encoder: ^FLAC__StreamEncoder) -> FLAC__StreamEncoderState ---
+	FLAC__stream_encoder_get_verify_decoder_state :: proc(encoder: ^FLAC__StreamEncoder) -> FLAC__StreamDecoderState ---
+	FLAC__stream_encoder_get_resolved_state_string :: proc(encoder: ^FLAC__StreamEncoder) -> cstring ---
+	FLAC__stream_encoder_get_verify_decoder_error_stats :: proc(encoder: ^FLAC__StreamEncoder, absolute_sample: ^FLAC__uint64, frame_number: ^uint32_t, channel: ^uint32_t, sample: ^uint32_t, expected: ^FLAC__int32, got: ^FLAC__int32) ---
+	FLAC__stream_encoder_get_verify :: proc(encoder: ^FLAC__StreamEncoder) -> FLAC__bool ---
+	FLAC__stream_encoder_get_streamable_subset :: proc(encoder: ^FLAC__StreamEncoder) -> FLAC__bool ---
+	FLAC__stream_encoder_get_channels :: proc(encoder: ^FLAC__StreamEncoder) -> uint32_t ---
+	FLAC__stream_encoder_get_bits_per_sample :: proc(encoder: ^FLAC__StreamEncoder) -> uint32_t ---
+	FLAC__stream_encoder_get_sample_rate :: proc(encoder: ^FLAC__StreamEncoder) -> uint32_t ---
+	FLAC__stream_encoder_get_blocksize :: proc(encoder: ^FLAC__StreamEncoder) -> uint32_t ---
+	FLAC__stream_encoder_get_do_mid_side_stereo :: proc(encoder: ^FLAC__StreamEncoder) -> FLAC__bool ---
+	FLAC__stream_encoder_get_loose_mid_side_stereo :: proc(encoder: ^FLAC__StreamEncoder) -> FLAC__bool ---
+	FLAC__stream_encoder_get_max_lpc_order :: proc(encoder: ^FLAC__StreamEncoder) -> uint32_t ---
+	FLAC__stream_encoder_get_qlp_coeff_precision :: proc(encoder: ^FLAC__StreamEncoder) -> uint32_t ---
+	FLAC__stream_encoder_get_do_qlp_coeff_prec_search :: proc(encoder: ^FLAC__StreamEncoder) -> FLAC__bool ---
+	FLAC__stream_encoder_get_do_escape_coding :: proc(encoder: ^FLAC__StreamEncoder) -> FLAC__bool ---
+	FLAC__stream_encoder_get_do_exhaustive_model_search :: proc(encoder: ^FLAC__StreamEncoder) -> FLAC__bool ---
+	FLAC__stream_encoder_get_min_residual_partition_order :: proc(encoder: ^FLAC__StreamEncoder) -> uint32_t ---
+	FLAC__stream_encoder_get_max_residual_partition_order :: proc(encoder: ^FLAC__StreamEncoder) -> uint32_t ---
+	FLAC__stream_encoder_get_num_threads :: proc(encoder: ^FLAC__StreamEncoder) -> uint32_t ---
+	FLAC__stream_encoder_get_rice_parameter_search_dist :: proc(encoder: ^FLAC__StreamEncoder) -> uint32_t ---
+	FLAC__stream_encoder_get_total_samples_estimate :: proc(encoder: ^FLAC__StreamEncoder) -> FLAC__uint64 ---
+	FLAC__stream_encoder_get_limit_min_bitrate :: proc(encoder: ^FLAC__StreamEncoder) -> FLAC__bool ---
+
+	FLAC__stream_encoder_init_stream :: proc(encoder: ^FLAC__StreamEncoder, write_callback: FLAC__StreamEncoderWriteCallback, seek_callback: FLAC__StreamEncoderSeekCallback, tell_callback: FLAC__StreamEncoderTellCallback, metadata_callback: FLAC__StreamEncoderMetadataCallback, client_data: rawptr) -> FLAC__StreamEncoderInitStatus ---
+	FLAC__stream_encoder_init_ogg_stream :: proc(encoder: ^FLAC__StreamEncoder, read_callback: FLAC__StreamEncoderReadCallback, write_callback: FLAC__StreamEncoderWriteCallback, seek_callback: FLAC__StreamEncoderSeekCallback, tell_callback: FLAC__StreamEncoderTellCallback, metadata_callback: FLAC__StreamEncoderMetadataCallback, client_data: rawptr) -> FLAC__StreamEncoderInitStatus ---
+	FLAC__stream_encoder_init_FILE :: proc(encoder: ^FLAC__StreamEncoder, file: FILE, progress_callback: FLAC__StreamEncoderProgressCallback, client_data: rawptr) -> FLAC__StreamEncoderInitStatus ---
+	FLAC__stream_encoder_init_ogg_FILE :: proc(encoder: ^FLAC__StreamEncoder, file: FILE, progress_callback: FLAC__StreamEncoderProgressCallback, client_data: rawptr) -> FLAC__StreamEncoderInitStatus ---
+	FLAC__stream_encoder_init_file :: proc(encoder: ^FLAC__StreamEncoder, filename: cstring, progress_callback: FLAC__StreamEncoderProgressCallback, client_data: rawptr) -> FLAC__StreamEncoderInitStatus ---
+	FLAC__stream_encoder_init_ogg_file :: proc(encoder: ^FLAC__StreamEncoder, filename: cstring, progress_callback: FLAC__StreamEncoderProgressCallback, client_data: rawptr) -> FLAC__StreamEncoderInitStatus ---
+
+	FLAC__stream_encoder_finish :: proc(encoder: ^FLAC__StreamEncoder) -> FLAC__bool ---
+	FLAC__stream_encoder_process :: proc(encoder: ^FLAC__StreamEncoder, buffer: []FLAC__int32, samples: uint32_t) -> FLAC__bool ---
+	FLAC__stream_encoder_process_interleaved :: proc(encoder: ^FLAC__StreamEncoder, buffer: []FLAC__int32, samples: uint32_t) -> FLAC__bool ---
 }
