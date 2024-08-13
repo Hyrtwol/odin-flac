@@ -43,8 +43,7 @@ stream_decoder_get_state :: proc(t: ^_t.T) {
 	defer f.FLAC__stream_decoder_delete(decoder)
 	_t.expect(t, decoder != nil)
 	state := f.FLAC__stream_decoder_get_state(decoder)
-	//fmt.printf("%v\n", state)
-	_t.expect(t, state == .FLAC__STREAM_DECODER_UNINITIALIZED)
+	_t.expectf(t, state == .FLAC__STREAM_DECODER_UNINITIALIZED, "%v\n", state)
 }
 
 @(test)
@@ -53,8 +52,7 @@ stream_decoder_get_resolved_state_string :: proc(t: ^_t.T) {
 	defer f.FLAC__stream_decoder_delete(decoder)
 	_t.expect(t, decoder != nil)
 	state := f.FLAC__stream_decoder_get_resolved_state_string(decoder)
-	//fmt.printf("%v\n", state)
-	_t.expect(t, state == "FLAC__STREAM_DECODER_UNINITIALIZED")
+	_t.expectf(t, state == "FLAC__STREAM_DECODER_UNINITIALIZED", "%v\n", state)
 }
 
 @(test)

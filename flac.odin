@@ -1,6 +1,7 @@
 package flac
 
 import _c "core:c"
+import "core:c/libc"
 
 foreign import flac_lib "FLAC.lib"
 
@@ -9,7 +10,7 @@ size_t :: _c.size_t
 int :: _c.int
 long :: _c.long
 char :: _c.char
-FILE :: rawptr
+FILE :: libc.FILE
 
 FLAC__int8 :: i8
 FLAC__int16 :: i16
