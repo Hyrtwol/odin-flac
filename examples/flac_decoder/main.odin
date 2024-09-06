@@ -98,7 +98,7 @@ main :: proc() {
 	defer f.FLAC__stream_decoder_delete(decoder)
 
 	ok: f.FLAC__bool
-	flac_file := strings.clone_to_cstring(filepath.clean("../flac/data/audio/lossless-flac-44khz-16bit-stereo.flac"))
+	flac_file := strings.clone_to_cstring(filepath.clean("../flac/data/audio/lossless-flac-44khz-16bit-stereo.flac", context.temp_allocator), context.temp_allocator)
 	fmt.println("flac_file:", flac_file)
 
 	fmt.println("version:", f.FLAC__VERSION_STRING)
