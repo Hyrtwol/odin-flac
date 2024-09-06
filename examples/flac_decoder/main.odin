@@ -5,6 +5,7 @@ import "base:runtime"
 import "core:fmt"
 import "core:path/filepath"
 import "core:strings"
+import "core:mem"
 
 clientapp :: struct {
 	i: i32,
@@ -94,6 +95,12 @@ write_callback :: proc "c" (decoder: ^f.FLAC__StreamDecoder, frame: ^f.FLAC__Fra
 }
 
 main :: proc() {
+
+	track: mem.Tracking_Allocator
+	mem.tracking_allocator_init(&track, context.allocator)
+	defer mem.tracking_allocator_destroy(&track)
+	context.allocator = mem.tracking_allocator(&track)
+
 	decoder := f.FLAC__stream_decoder_new()
 	defer f.FLAC__stream_decoder_delete(decoder)
 
@@ -127,4 +134,12 @@ main :: proc() {
 	fmt.println("state:", f.FLAC__stream_decoder_get_state(decoder))
 
 	fmt.println("done.")
+
+
+	for _, leak in track.allocation_map {
+		fmt.printf("%v leaked %m\n", leak.location, leak.size)
+	}
+	for bad_free in track.bad_free_array {
+		fmt.printf("%v allocation %p was freed badly\n", bad_free.location, bad_free.memory)
+	}
 }
