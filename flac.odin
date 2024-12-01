@@ -1,15 +1,14 @@
 package flac
 
-import _c "core:c"
 import "core:c/libc"
 
 foreign import flac_lib "FLAC.lib"
 
-uint32_t :: _c.uint32_t
-size_t :: _c.size_t
-int :: _c.int
-long :: _c.long
-char :: _c.char
+uint32_t :: libc.uint32_t
+size_t :: libc.size_t
+int :: libc.int
+long :: libc.long
+char :: libc.char
 FILE :: libc.FILE
 
 FLAC__int8 :: i8
@@ -25,26 +24,53 @@ FLAC__uint64 :: u64
 FLAC__bool :: bool
 FLAC__byte :: FLAC__uint8
 
-// format
-
+/** The largest legal metadata type code. */
 FLAC__MAX_METADATA_TYPE_CODE :: 126
+/** The minimum block size, in samples, permitted by the format. */
 FLAC__MIN_BLOCK_SIZE :: 16
+/** The maximum block size, in samples, permitted by the format. */
 FLAC__MAX_BLOCK_SIZE :: 65535
+/** The maximum block size, in samples, permitted by the FLAC subset for
+ *  sample rates up to 48kHz. */
 FLAC__SUBSET_MAX_BLOCK_SIZE_48000HZ :: 4608
+/** The maximum number of channels permitted by the format. */
 FLAC__MAX_CHANNELS :: 8
+/** The minimum sample resolution permitted by the format. */
 FLAC__MIN_BITS_PER_SAMPLE :: 4
+/** The maximum sample resolution permitted by the format. */
 FLAC__MAX_BITS_PER_SAMPLE :: 32
+/** The maximum sample resolution permitted by libFLAC.
+ *
+ * FLAC__MAX_BITS_PER_SAMPLE is the limit of the FLAC format.  However,
+ * the reference encoder/decoder used to be limited to 24 bits. This
+ * value was used to signal that limit.
+ */
 FLAC__REFERENCE_CODEC_MAX_BITS_PER_SAMPLE :: 32
+/** The maximum sample rate permitted by the format.  The value is
+ *  ((2 ^ 20) - 1)
+ */
 FLAC__MAX_SAMPLE_RATE :: 1048575
+/** The maximum LPC order permitted by the format. */
 FLAC__MAX_LPC_ORDER :: 32
+/** The maximum LPC order permitted by the FLAC subset for sample rates
+ *  up to 48kHz. */
 FLAC__SUBSET_MAX_LPC_ORDER_48000HZ :: 12
+/** The minimum quantized linear predictor coefficient precision
+ *  permitted by the format.
+ */
 FLAC__MIN_QLP_COEFF_PRECISION :: 5
+/** The maximum quantized linear predictor coefficient precision
+ *  permitted by the format.
+ */
 FLAC__MAX_QLP_COEFF_PRECISION :: 15
+/** The maximum order of the fixed predictors permitted by the format. */
 FLAC__MAX_FIXED_ORDER :: 4
+/** The maximum Rice partition order permitted by the format. */
 FLAC__MAX_RICE_PARTITION_ORDER :: 15
+/** The maximum Rice partition order permitted by the FLAC Subset. */
 FLAC__SUBSET_MAX_RICE_PARTITION_ORDER :: 8
 
-
+/** An enumeration of the available entropy coding methods. */
 FLAC__EntropyCodingMethodType :: enum uint32_t {
 	/**< Residual is coded by partitioning into contexts, each with it's own
 	* 4-bit Rice parameter. */
@@ -54,6 +80,9 @@ FLAC__EntropyCodingMethodType :: enum uint32_t {
 	* 5-bit Rice parameter. */
 	FLAC__ENTROPY_CODING_METHOD_PARTITIONED_RICE2 = 1,
 }
+
+/** Contents of a Rice partitioned residual
+ */
 FLAC__EntropyCodingMethod_PartitionedRiceContents :: struct {
 	/**< The Rice parameters for each context. */
 	parameters:        ^uint32_t,
@@ -69,6 +98,9 @@ FLAC__EntropyCodingMethod_PartitionedRiceContents :: struct {
 	*/
 	capacity_by_order: uint32_t,
 }
+
+/** Header for a Rice partitioned residual.  (c.f. <A HREF="https://xiph.org/flac/format.html#partitioned_rice">format specification</A>)
+ */
 FLAC__EntropyCodingMethod_PartitionedRice :: struct {
 	/**< The partition order, i.e. # of contexts = 2 ^ \a order. */
 	order:    uint32_t,
@@ -77,6 +109,8 @@ FLAC__EntropyCodingMethod_PartitionedRice :: struct {
 	contents: ^FLAC__EntropyCodingMethod_PartitionedRiceContents,
 }
 
+/** Header for the entropy coding method.  (c.f. <A HREF="https://xiph.org/flac/format.html#residual">format specification</A>)
+ */
 FLAC__EntropyCodingMethod :: struct {
 	type: FLAC__EntropyCodingMethodType,
 	data: struct #raw_union {
@@ -84,21 +118,28 @@ FLAC__EntropyCodingMethod :: struct {
 	},
 }
 
+/** An enumeration of the available subframe types. */
 FLAC__SubframeType :: enum uint32_t {
 	FLAC__SUBFRAME_TYPE_CONSTANT = 0, /**< constant signal */
 	FLAC__SUBFRAME_TYPE_VERBATIM = 1, /**< uncompressed signal */
 	FLAC__SUBFRAME_TYPE_FIXED    = 2, /**< fixed polynomial prediction */
 	FLAC__SUBFRAME_TYPE_LPC      = 3, /**< linear prediction */
 }
+
+/** CONSTANT subframe.  (c.f. <A HREF="https://xiph.org/flac/format.html#subframe_constant">format specification</A>)
+ */
 FLAC__Subframe_Constant :: struct {
 	value: FLAC__int64, /**< The constant signal value. */
 }
+
+/** An enumeration of the possible verbatim subframe data types. */
 FLAC__VerbatimSubframeDataType :: enum uint32_t {
 	FLAC__VERBATIM_SUBFRAME_DATA_TYPE_INT32, /**< verbatim subframe has 32-bit int */
 	FLAC__VERBATIM_SUBFRAME_DATA_TYPE_INT64, /**< verbatim subframe has 64-bit int */
 }
 
-
+/** VERBATIM subframe.  (c.f. <A HREF="https://xiph.org/flac/format.html#subframe_verbatim">format specification</A>)
+ */
 FLAC__Subframe_Verbatim :: struct {
 	data:      struct #raw_union {
 		int32: ^FLAC__int32, /**< A FLAC__int32 pointer to verbatim signal. */
@@ -107,6 +148,8 @@ FLAC__Subframe_Verbatim :: struct {
 	data_type: FLAC__VerbatimSubframeDataType,
 }
 
+/** FIXED subframe.  (c.f. <A HREF="https://xiph.org/flac/format.html#subframe_fixed">format specification</A>)
+ */
 FLAC__Subframe_Fixed :: struct {
 	/**< The residual coding method. */
 	entropy_coding_method: FLAC__EntropyCodingMethod,
@@ -118,6 +161,9 @@ FLAC__Subframe_Fixed :: struct {
 	warmup:                [FLAC__MAX_FIXED_ORDER]FLAC__int64,
 	residual:              ^FLAC__int32,
 }
+
+/** LPC subframe.  (c.f. <A HREF="https://xiph.org/flac/format.html#subframe_lpc">format specification</A>)
+ */
 FLAC__Subframe_LPC :: struct {
 	/**< The residual coding method. */
 	entropy_coding_method: FLAC__EntropyCodingMethod,
@@ -139,6 +185,8 @@ FLAC__Subframe_LPC :: struct {
 	residual:              ^FLAC__int32,
 }
 
+/** FLAC subframe structure.  (c.f. <A HREF="https://xiph.org/flac/format.html#subframe">format specification</A>)
+ */
 FLAC__Subframe :: struct {
 	type:        FLAC__SubframeType,
 	data:        struct #raw_union {
@@ -150,17 +198,22 @@ FLAC__Subframe :: struct {
 	wasted_bits: uint32_t,
 }
 
+/** An enumeration of the available channel assignments. */
 FLAC__ChannelAssignment :: enum uint32_t {
 	FLAC__CHANNEL_ASSIGNMENT_INDEPENDENT = 0, /**< independent channels */
 	FLAC__CHANNEL_ASSIGNMENT_LEFT_SIDE   = 1, /**< left+side stereo */
 	FLAC__CHANNEL_ASSIGNMENT_RIGHT_SIDE  = 2, /**< right+side stereo */
 	FLAC__CHANNEL_ASSIGNMENT_MID_SIDE    = 3, /**< mid+side stereo */
 }
+
+/** An enumeration of the possible frame numbering methods. */
 FLAC__FrameNumberType :: enum uint32_t {
 	FLAC__FRAME_NUMBER_TYPE_FRAME_NUMBER, /**< number contains the frame number */
 	FLAC__FRAME_NUMBER_TYPE_SAMPLE_NUMBER, /**< number contains the sample number of first sample in frame */
 }
 
+/** FLAC frame header structure.  (c.f. <A HREF="https://xiph.org/flac/format.html#frame_header">format specification</A>)
+ */
 FLAC__FrameHeader :: struct {
 	/**< The number of samples per subframe. */
 	blocksize:          uint32_t,
@@ -189,16 +242,21 @@ FLAC__FrameHeader :: struct {
 	crc:                FLAC__uint8,
 }
 
+/** FLAC frame footer structure.  (c.f. <A HREF="https://xiph.org/flac/format.html#frame_footer">format specification</A>)
+ */
 FLAC__FrameFooter :: struct {
 	crc: FLAC__uint16,
 }
 
+/** FLAC frame structure.  (c.f. <A HREF="https://xiph.org/flac/format.html#frame">format specification</A>)
+ */
 FLAC__Frame :: struct {
 	header:    FLAC__FrameHeader,
 	subframes: [FLAC__MAX_CHANNELS]FLAC__Subframe,
 	footer:    FLAC__FrameFooter,
 }
 
+/** An enumeration of the available metadata block types. */
 FLAC__MetadataType :: enum uint32_t {
 	/**< <A HREF="https://xiph.org/flac/format.html#metadata_block_streaminfo">STREAMINFO</A> block */
 	FLAC__METADATA_TYPE_STREAMINFO     = 0,
@@ -228,7 +286,8 @@ FLAC__MetadataType :: enum uint32_t {
 	FLAC__MAX_METADATA_TYPE            = FLAC__MAX_METADATA_TYPE_CODE,
 }
 
-
+/** FLAC STREAMINFO structure.  (c.f. <A HREF="https://xiph.org/flac/format.html#metadata_block_streaminfo">format specification</A>)
+ */
 FLAC__StreamMetadata_StreamInfo :: struct {
 	min_blocksize, max_blocksize: uint32_t,
 	min_framesize, max_framesize: uint32_t,
@@ -239,6 +298,8 @@ FLAC__StreamMetadata_StreamInfo :: struct {
 	md5sum:                       [16]FLAC__byte,
 }
 
+/** FLAC PADDING structure.  (c.f. <A HREF="https://xiph.org/flac/format.html#metadata_block_padding">format specification</A>)
+ */
 FLAC__StreamMetadata_Padding :: struct {
 	/**< Conceptually this is an empty struct since we don't store the
 	 * padding bytes.  Empty structs are not allowed by some C compilers,
@@ -247,11 +308,15 @@ FLAC__StreamMetadata_Padding :: struct {
 	_: int,
 }
 
+/** FLAC APPLICATION structure.  (c.f. <A HREF="https://xiph.org/flac/format.html#metadata_block_application">format specification</A>)
+ */
 FLAC__StreamMetadata_Application :: struct {
 	id:   [4]FLAC__byte,
 	data: ^FLAC__byte,
 }
 
+/** SeekPoint structure used in SEEKTABLE blocks.  (c.f. <A HREF="https://xiph.org/flac/format.html#seekpoint">format specification</A>)
+ */
 FLAC__StreamMetadata_SeekPoint :: struct {
 	/**<  The sample number of the target frame. */
 	sample_number: FLAC__uint64,
@@ -264,19 +329,46 @@ FLAC__StreamMetadata_SeekPoint :: struct {
 	frame_samples: uint32_t,
 }
 
+/** FLAC SEEKTABLE structure.  (c.f. <A HREF="https://xiph.org/flac/format.html#metadata_block_seektable">format specification</A>)
+ *
+ * \note From the format specification:
+ * - The seek points must be sorted by ascending sample number.
+ * - Each seek point's sample number must be the first sample of the
+ *   target frame.
+ * - Each seek point's sample number must be unique within the table.
+ * - Existence of a SEEKTABLE block implies a correct setting of
+ *   total_samples in the stream_info block.
+ * - Behavior is undefined when more than one SEEKTABLE block is
+ *   present in a stream.
+ */
 FLAC__StreamMetadata_SeekTable :: struct {
 	num_points: uint32_t,
 	points:     ^FLAC__StreamMetadata_SeekPoint,
 }
+
+/** Vorbis comment entry structure used in VORBIS_COMMENT blocks.  (c.f. <A HREF="https://xiph.org/flac/format.html#metadata_block_vorbis_comment">format specification</A>)
+ *
+ *  For convenience, the APIs maintain a trailing NUL character at the end of
+ *  \a entry which is not counted toward \a length, i.e.
+ *  \code strlen(entry) == length \endcode
+ */
 FLAC__StreamMetadata_VorbisComment_Entry :: struct {
 	length: FLAC__uint32,
 	entry:  ^FLAC__byte,
 }
+
+/** FLAC VORBIS_COMMENT structure.  (c.f. <A HREF="https://xiph.org/flac/format.html#metadata_block_vorbis_comment">format specification</A>)
+ */
 FLAC__StreamMetadata_VorbisComment :: struct {
 	vendor_string: FLAC__StreamMetadata_VorbisComment_Entry,
 	num_comments:  FLAC__uint32,
 	comments:      ^FLAC__StreamMetadata_VorbisComment_Entry,
 }
+
+/** FLAC CUESHEET track index structure.  (See the
+ * <A HREF="https://xiph.org/flac/format.html#cuesheet_track_index">format specification</A> for
+ * the full description of each field.)
+ */
 FLAC__StreamMetadata_CueSheet_Index :: struct {
 	/**< Offset in samples, relative to the track offset, of the index
 	* point.
@@ -286,6 +378,11 @@ FLAC__StreamMetadata_CueSheet_Index :: struct {
 	/**< The index point number. */
 	number: FLAC__byte,
 }
+
+/** FLAC CUESHEET track structure.  (See the
+ * <A HREF="https://xiph.org/flac/format.html#cuesheet_track">format specification</A> for
+ * the full description of each field.)
+ */
 FLAC__StreamMetadata_CueSheet_Track :: struct {
 	/**< Track offset in samples, relative to the beginning of the FLAC audio stream. */
 	offset:       FLAC__uint64,
@@ -308,6 +405,11 @@ FLAC__StreamMetadata_CueSheet_Track :: struct {
 	/**< NULL if num_indices == 0, else pointer to array of index points. */
 	indices:      ^FLAC__StreamMetadata_CueSheet_Index,
 }
+
+/** FLAC CUESHEET structure.  (See the
+ * <A HREF="https://xiph.org/flac/format.html#metadata_block_cuesheet">format specification</A>
+ * for the full description of each field.)
+ */
 FLAC__StreamMetadata_CueSheet :: struct {
 	/**< Media catalog number, in ASCII printable characters 0x20-0x7e.  In
 	* general, the media catalog number may be 0 to 128 bytes long; any
@@ -327,7 +429,8 @@ FLAC__StreamMetadata_CueSheet :: struct {
 	/**< NULL if num_tracks == 0, else pointer to array of tracks. */
 	tracks:               ^FLAC__StreamMetadata_CueSheet_Track,
 }
-// FLAC__STREAM_METADATA_PICTURE_TYPE
+
+/** An enumeration of the PICTURE types (see FLAC__StreamMetadataPicture and id3 v2.4 APIC tag). */
 FLAC__StreamMetadata_Picture_Type :: enum uint32_t {
 	OTHER = 0, /**< Other */
 	FILE_ICON_STANDARD = 1, /**< 32x32 pixels 'file icon' (PNG only) */
@@ -352,6 +455,10 @@ FLAC__StreamMetadata_Picture_Type :: enum uint32_t {
 	PUBLISHER_LOGOTYPE = 20, /**< Publisher/Studio logotype */
 	UNDEFINED,
 }
+/** FLAC PICTURE structure.  (See the
+ * <A HREF="https://xiph.org/flac/format.html#metadata_block_picture">format specification</A>
+ * for the full description of each field.)
+ */
 FLAC__StreamMetadata_Picture :: struct {
 	/**< The kind of picture stored. */
 	type:        FLAC__StreamMetadata_Picture_Type,
@@ -394,10 +501,16 @@ FLAC__StreamMetadata_Picture :: struct {
 	/**< Binary picture data. */
 	data:        ^FLAC__byte,
 }
+/** Structure that is used when a metadata block of unknown type is loaded.
+ *  The contents are opaque.  The structure is used only internally to
+ *  correctly handle unknown metadata.
+ */
 FLAC__StreamMetadata_Unknown :: struct {
 	data: ^FLAC__byte,
 }
 
+/** FLAC metadata block structure.  (c.f. <A HREF="https://xiph.org/flac/format.html#metadata_block">format specification</A>)
+ */
 FLAC__StreamMetadata :: struct {
 	/**< The type of the metadata block; used determine which member of the
 	* \a data union to dereference.  If type >= FLAC__METADATA_TYPE_UNDEFINED
@@ -423,13 +536,13 @@ FLAC__StreamMetadata :: struct {
 
 @(default_calling_convention = "c")
 foreign flac_lib {
-	//@(link_name="FLAC__VERSION_STRING")
+	/* The version string of the release, stamped onto the libraries and binaries. */
 	FLAC__VERSION_STRING: cstring
+	/* The vendor string inserted by the encoder into the VORBIS_COMMENT block. */
 	FLAC__VENDOR_STRING: cstring
 
 	FLAC__stream_decoder_new :: proc() -> ^FLAC__StreamDecoder ---
 	FLAC__stream_decoder_delete :: proc(decoder: ^FLAC__StreamDecoder) ---
-
 	FLAC__stream_decoder_set_ogg_serial_number :: proc(decoder: ^FLAC__StreamDecoder, serial_number: long) -> FLAC__bool ---
 	FLAC__stream_decoder_set_md5_checking :: proc(decoder: ^FLAC__StreamDecoder, value: FLAC__bool) -> FLAC__bool ---
 	FLAC__stream_decoder_set_metadata_respond :: proc(decoder: ^FLAC__StreamDecoder, type: FLAC__MetadataType) -> FLAC__bool ---
@@ -449,7 +562,6 @@ foreign flac_lib {
 	FLAC__stream_decoder_get_blocksize :: proc(decoder: ^FLAC__StreamDecoder) -> FLAC__uint32 ---
 	FLAC__stream_decoder_get_decode_position :: proc(decoder: ^FLAC__StreamDecoder, position: ^FLAC__uint64) -> FLAC__bool ---
 	FLAC__stream_decoder_get_client_data :: proc(decoder: ^FLAC__StreamDecoder) -> rawptr ---
-
 	FLAC__stream_decoder_init_stream :: proc(decoder: ^FLAC__StreamDecoder, read_callback: FLAC__StreamDecoderReadCallback, seek_callback: FLAC__StreamDecoderSeekCallback, tell_callback: FLAC__StreamDecoderTellCallback, length_callback: FLAC__StreamDecoderLengthCallback, eof_callback: FLAC__StreamDecoderEofCallback, write_callback: FLAC__StreamDecoderWriteCallback, metadata_callback: FLAC__StreamDecoderMetadataCallback, error_callback: FLAC__StreamDecoderErrorCallback, client_data: rawptr) -> FLAC__StreamDecoderInitStatus ---
 	FLAC__stream_decoder_init_ogg_stream :: proc(decoder: ^FLAC__StreamDecoder, read_callback: FLAC__StreamDecoderReadCallback, seek_callback: FLAC__StreamDecoderSeekCallback, tell_callback: FLAC__StreamDecoderTellCallback, length_callback: FLAC__StreamDecoderLengthCallback, eof_callback: FLAC__StreamDecoderEofCallback, write_callback: FLAC__StreamDecoderWriteCallback, metadata_callback: FLAC__StreamDecoderMetadataCallback, error_callback: FLAC__StreamDecoderErrorCallback, client_data: rawptr) -> FLAC__StreamDecoderInitStatus ---
 	FLAC__stream_decoder_init_FILE :: proc(decoder: ^FLAC__StreamDecoder, file: FILE, write_callback: FLAC__StreamDecoderWriteCallback, metadata_callback: FLAC__StreamDecoderMetadataCallback, error_callback: FLAC__StreamDecoderErrorCallback, client_data: rawptr) -> FLAC__StreamDecoderInitStatus ---
@@ -465,10 +577,8 @@ foreign flac_lib {
 	FLAC__stream_decoder_skip_single_frame :: proc(decoder: ^FLAC__StreamDecoder) -> FLAC__bool ---
 	FLAC__stream_decoder_seek_absolute :: proc(decoder: ^FLAC__StreamDecoder, sample: FLAC__uint64) -> FLAC__bool ---
 
-
 	FLAC__stream_encoder_new :: proc() -> ^FLAC__StreamEncoder ---
 	FLAC__stream_encoder_delete :: proc(encoder: ^FLAC__StreamEncoder) ---
-
 	FLAC__stream_encoder_set_ogg_serial_number :: proc(encoder: ^FLAC__StreamEncoder, serial_number: long) -> FLAC__bool ---
 	FLAC__stream_encoder_set_verify :: proc(encoder: ^FLAC__StreamEncoder, value: FLAC__bool) -> FLAC__bool ---
 	FLAC__stream_encoder_set_streamable_subset :: proc(encoder: ^FLAC__StreamEncoder, value: FLAC__bool) -> FLAC__bool ---
@@ -515,14 +625,12 @@ foreign flac_lib {
 	FLAC__stream_encoder_get_rice_parameter_search_dist :: proc(encoder: ^FLAC__StreamEncoder) -> uint32_t ---
 	FLAC__stream_encoder_get_total_samples_estimate :: proc(encoder: ^FLAC__StreamEncoder) -> FLAC__uint64 ---
 	FLAC__stream_encoder_get_limit_min_bitrate :: proc(encoder: ^FLAC__StreamEncoder) -> FLAC__bool ---
-
 	FLAC__stream_encoder_init_stream :: proc(encoder: ^FLAC__StreamEncoder, write_callback: FLAC__StreamEncoderWriteCallback, seek_callback: FLAC__StreamEncoderSeekCallback, tell_callback: FLAC__StreamEncoderTellCallback, metadata_callback: FLAC__StreamEncoderMetadataCallback, client_data: rawptr) -> FLAC__StreamEncoderInitStatus ---
 	FLAC__stream_encoder_init_ogg_stream :: proc(encoder: ^FLAC__StreamEncoder, read_callback: FLAC__StreamEncoderReadCallback, write_callback: FLAC__StreamEncoderWriteCallback, seek_callback: FLAC__StreamEncoderSeekCallback, tell_callback: FLAC__StreamEncoderTellCallback, metadata_callback: FLAC__StreamEncoderMetadataCallback, client_data: rawptr) -> FLAC__StreamEncoderInitStatus ---
 	FLAC__stream_encoder_init_FILE :: proc(encoder: ^FLAC__StreamEncoder, file: FILE, progress_callback: FLAC__StreamEncoderProgressCallback, client_data: rawptr) -> FLAC__StreamEncoderInitStatus ---
 	FLAC__stream_encoder_init_ogg_FILE :: proc(encoder: ^FLAC__StreamEncoder, file: FILE, progress_callback: FLAC__StreamEncoderProgressCallback, client_data: rawptr) -> FLAC__StreamEncoderInitStatus ---
 	FLAC__stream_encoder_init_file :: proc(encoder: ^FLAC__StreamEncoder, filename: cstring, progress_callback: FLAC__StreamEncoderProgressCallback, client_data: rawptr) -> FLAC__StreamEncoderInitStatus ---
 	FLAC__stream_encoder_init_ogg_file :: proc(encoder: ^FLAC__StreamEncoder, filename: cstring, progress_callback: FLAC__StreamEncoderProgressCallback, client_data: rawptr) -> FLAC__StreamEncoderInitStatus ---
-
 	FLAC__stream_encoder_finish :: proc(encoder: ^FLAC__StreamEncoder) -> FLAC__bool ---
 	FLAC__stream_encoder_process :: proc(encoder: ^FLAC__StreamEncoder, buffer: []FLAC__int32, samples: uint32_t) -> FLAC__bool ---
 	FLAC__stream_encoder_process_interleaved :: proc(encoder: ^FLAC__StreamEncoder, buffer: []FLAC__int32, samples: uint32_t) -> FLAC__bool ---

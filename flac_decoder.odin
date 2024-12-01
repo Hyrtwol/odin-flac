@@ -118,26 +118,18 @@ FLAC__StreamDecoderErrorStatus :: enum u32 {
 
 FLAC__StreamDecoder :: struct {}
 
-//typedef FLAC__StreamDecoderReadStatus (*FLAC__StreamDecoderReadCallback)(const FLAC__StreamDecoder *decoder, FLAC__byte buffer[], size_t *bytes, void *client_data);
 FLAC__StreamDecoderReadCallback :: #type proc "c" (decoder: ^FLAC__StreamDecoder, buffer: []FLAC__byte, bytes: ^size_t, client_data: rawptr) -> FLAC__StreamDecoderReadStatus
 
-//typedef FLAC__StreamDecoderSeekStatus (*FLAC__StreamDecoderSeekCallback)(const FLAC__StreamDecoder *decoder, FLAC__uint64 absolute_byte_offset, void *client_data);
 FLAC__StreamDecoderSeekCallback :: #type proc "c" (decoder: ^FLAC__StreamDecoder, absolute_byte_offset: FLAC__uint64, client_data: rawptr) -> FLAC__StreamDecoderSeekStatus
 
-//typedef FLAC__StreamDecoderTellStatus (*FLAC__StreamDecoderTellCallback)(const FLAC__StreamDecoder *decoder, FLAC__uint64 *absolute_byte_offset, void *client_data);
 FLAC__StreamDecoderTellCallback :: #type proc "c" (decoder: ^FLAC__StreamDecoder, absolute_byte_offset: FLAC__uint64, client_data: rawptr) -> FLAC__StreamDecoderTellStatus
 
-//typedef FLAC__StreamDecoderLengthStatus (*FLAC__StreamDecoderLengthCallback)(const FLAC__StreamDecoder *decoder, FLAC__uint64 *stream_length, void *client_data);
 FLAC__StreamDecoderLengthCallback :: #type proc "c" (decoder: ^FLAC__StreamDecoder, stream_length: FLAC__uint64, client_data: rawptr) -> FLAC__StreamDecoderLengthStatus
 
-//typedef FLAC__bool (*FLAC__StreamDecoderEofCallback)(const FLAC__StreamDecoder *decoder, void *client_data);
 FLAC__StreamDecoderEofCallback :: #type proc "c" (decoder: ^FLAC__StreamDecoder, client_data: rawptr) -> FLAC__bool
 
-//typedef FLAC__StreamDecoderWriteStatus (*FLAC__StreamDecoderWriteCallback)(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame, const FLAC__int32 * const buffer[], void *client_data);
 FLAC__StreamDecoderWriteCallback :: #type proc "c" (decoder: ^FLAC__StreamDecoder, frame: ^FLAC__Frame, buffer: []FLAC__int32, client_data: rawptr) -> FLAC__StreamDecoderWriteStatus
 
-//typedef void (*FLAC__StreamDecoderMetadataCallback)(const FLAC__StreamDecoder *decoder, const FLAC__StreamMetadata *metadata, void *client_data);
 FLAC__StreamDecoderMetadataCallback :: #type proc "c" (decoder: ^FLAC__StreamDecoder, metadata: ^FLAC__StreamMetadata, client_data: rawptr)
 
-//typedef void (*FLAC__StreamDecoderErrorCallback)(const FLAC__StreamDecoder *decoder, FLAC__StreamDecoderErrorStatus status, void *client_data);
 FLAC__StreamDecoderErrorCallback :: #type proc "c" (decoder: ^FLAC__StreamDecoder, status: FLAC__StreamDecoderErrorStatus, client_data: rawptr)

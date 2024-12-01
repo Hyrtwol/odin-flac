@@ -1,6 +1,6 @@
 package main
 
-import f "../.."
+import flac "../.."
 import "base:runtime"
 import "core:fmt"
 import "core:path/filepath"
@@ -11,15 +11,15 @@ clientapp :: struct {
 }
 papp :: ^clientapp
 
-error_callback :: proc "c" (decoder: ^f.FLAC__StreamDecoder, status: f.FLAC__StreamDecoderErrorStatus, client_data: rawptr) {
+error_callback :: proc "c" (decoder: ^flac.FLAC__StreamDecoder, status: flac.FLAC__StreamDecoderErrorStatus, client_data: rawptr) {
 	context = runtime.default_context()
-	app := papp(client_data)
+	app := (papp)(client_data)
 	fmt.println(#procedure, status, app)
 }
 
-metadata_callback :: proc "c" (decoder: ^f.FLAC__StreamDecoder, metadata: ^f.FLAC__StreamMetadata, client_data: rawptr) {
+metadata_callback :: proc "c" (decoder: ^flac.FLAC__StreamDecoder, metadata: ^flac.FLAC__StreamMetadata, client_data: rawptr) {
 	context = runtime.default_context()
-	app := papp(client_data)
+	app := (papp)(client_data)
 	fmt.println(#procedure, app)
 	if metadata != nil {
 		fmt.println("type", metadata.type)
@@ -45,9 +45,9 @@ metadata_callback :: proc "c" (decoder: ^f.FLAC__StreamDecoder, metadata: ^f.FLA
 	}
 }
 
-write_callback :: proc "c" (decoder: ^f.FLAC__StreamDecoder, frame: ^f.FLAC__Frame, buffer: []f.FLAC__int32, client_data: rawptr) -> f.FLAC__StreamDecoderWriteStatus {
+write_callback :: proc "c" (decoder: ^flac.FLAC__StreamDecoder, frame: ^flac.FLAC__Frame, buffer: []flac.FLAC__int32, client_data: rawptr) -> flac.FLAC__StreamDecoderWriteStatus {
 	context = runtime.default_context()
-	app := papp(client_data)
+	app := (papp)(client_data)
 	fmt.println(#procedure, app)
 	{
 		header := frame.header
@@ -90,41 +90,39 @@ write_callback :: proc "c" (decoder: ^f.FLAC__StreamDecoder, frame: ^f.FLAC__Fra
 		fmt.println("  [footer]")
 		fmt.println("    crc", footer.crc)
 	}
-	return f.FLAC__StreamDecoderWriteStatus.FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE
+	return flac.FLAC__StreamDecoderWriteStatus.FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE
 }
 
 main :: proc() {
-	decoder := f.FLAC__stream_decoder_new()
-	defer f.FLAC__stream_decoder_delete(decoder)
+	decoder := flac.FLAC__stream_decoder_new()
+	defer flac.FLAC__stream_decoder_delete(decoder)
 
-	ok: f.FLAC__bool
-	flac_file := strings.clone_to_cstring(filepath.clean("../flac/data/audio/lossless-flac-44khz-16bit-stereo.flac", context.temp_allocator), context.temp_allocator)
+	ok: flac.FLAC__bool
+	flac_file := strings.clone_to_cstring(filepath.clean("../../data/audio/lossless-flac-44khz-16bit-stereo.flac", context.temp_allocator), context.temp_allocator)
 	fmt.println("flac_file:", flac_file)
-
-	fmt.println("version:", f.FLAC__VERSION_STRING)
-
-	fmt.println("state:", f.FLAC__stream_decoder_get_state(decoder))
+	fmt.println("version:", flac.FLAC__VERSION_STRING)
+	fmt.println("state:", flac.FLAC__stream_decoder_get_state(decoder))
 
 	app : clientapp = {
 		i = 666,
 	}
 
-	status := f.FLAC__stream_decoder_init_file(decoder, flac_file, write_callback, metadata_callback, error_callback, &app)
+	status := flac.FLAC__stream_decoder_init_file(decoder, flac_file, write_callback, metadata_callback, error_callback, &app)
 	fmt.println("FLAC__stream_decoder_init_file:", status)
 
-	fmt.println("state:", f.FLAC__stream_decoder_get_state(decoder))
+	fmt.println("state:", flac.FLAC__stream_decoder_get_state(decoder))
 
 	if status == .FLAC__STREAM_DECODER_INIT_STATUS_OK {
-		ok = f.FLAC__stream_decoder_process_until_end_of_stream(decoder)
+		ok = flac.FLAC__stream_decoder_process_until_end_of_stream(decoder)
 		fmt.println("FLAC__stream_decoder_process_until_end_of_stream", ok)
 	}
 
-	fmt.println("state:", f.FLAC__stream_decoder_get_state(decoder))
+	fmt.println("state:", flac.FLAC__stream_decoder_get_state(decoder))
 
-	ok = f.FLAC__stream_decoder_finish(decoder)
+	ok = flac.FLAC__stream_decoder_finish(decoder)
 	fmt.println("FLAC__stream_decoder_finish", ok)
 
-	fmt.println("state:", f.FLAC__stream_decoder_get_state(decoder))
+	fmt.println("state:", flac.FLAC__stream_decoder_get_state(decoder))
 
 	fmt.println("done.")
 }

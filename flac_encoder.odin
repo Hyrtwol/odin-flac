@@ -115,21 +115,14 @@ FLAC__StreamEncoderTellStatus :: enum u32 {
 
 FLAC__StreamEncoder :: struct {}
 
-// typedef FLAC__StreamEncoderReadStatus (*FLAC__StreamEncoderReadCallback)(const FLAC__StreamEncoder *encoder, FLAC__byte buffer[], size_t *bytes, void *client_data);
 FLAC__StreamEncoderReadCallback :: #type proc "c" (encoder: ^FLAC__StreamEncoder, buffer: []FLAC__byte, bytes: ^size_t, client_data: rawptr) -> FLAC__StreamEncoderReadStatus
 
-// typedef FLAC__StreamEncoderWriteStatus (*FLAC__StreamEncoderWriteCallback)(const FLAC__StreamEncoder *encoder, const FLAC__byte buffer[], size_t bytes, uint32_t samples, uint32_t current_frame, void *client_data);
 FLAC__StreamEncoderWriteCallback :: #type proc "c" (encoder: ^FLAC__StreamEncoder, buffer: []FLAC__byte, bytes: size_t, samples: uint32_t, current_frame: uint32_t, client_data: rawptr) -> FLAC__StreamEncoderWriteStatus
 
-// typedef FLAC__StreamEncoderSeekStatus (*FLAC__StreamEncoderSeekCallback)(const FLAC__StreamEncoder *encoder, FLAC__uint64 absolute_byte_offset, void *client_data);
 FLAC__StreamEncoderSeekCallback :: #type proc "c" (encoder: ^FLAC__StreamEncoder, absolute_byte_offset: FLAC__uint64, client_data: rawptr) -> FLAC__StreamEncoderSeekStatus
 
-// typedef FLAC__StreamEncoderTellStatus (*FLAC__StreamEncoderTellCallback)(const FLAC__StreamEncoder *encoder, FLAC__uint64 *absolute_byte_offset, void *client_data);
 FLAC__StreamEncoderTellCallback :: #type proc "c" (encoder: ^FLAC__StreamEncoder, absolute_byte_offset: ^FLAC__uint64, client_data: rawptr) -> FLAC__StreamEncoderTellStatus
 
-// typedef void (*FLAC__StreamEncoderMetadataCallback)(const FLAC__StreamEncoder *encoder, const FLAC__StreamMetadata *metadata, void *client_data);
 FLAC__StreamEncoderMetadataCallback :: #type proc "c" (encoder: ^FLAC__StreamEncoder, metadata: ^FLAC__StreamMetadata, client_data: rawptr)
 
-// typedef void (*FLAC__StreamEncoderProgressCallback)(const FLAC__StreamEncoder *encoder, FLAC__uint64 bytes_written, FLAC__uint64 samples_written, uint32_t frames_written, uint32_t total_frames_estimate, void *client_data);
 FLAC__StreamEncoderProgressCallback :: #type proc "c" (encoder: ^FLAC__StreamEncoder, bytes_written: FLAC__uint64, samples_written: FLAC__uint64, frames_written: uint32_t, total_frames_estimate: uint32_t, client_data: rawptr)
-
