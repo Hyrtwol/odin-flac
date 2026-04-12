@@ -22,8 +22,10 @@ metadata_callback :: proc "c" (decoder: ^flac.FLAC__StreamDecoder, metadata: ^fl
 	app := (papp)(client_data)
 	fmt.println(#procedure, app)
 	if metadata != nil {
-		fmt.println("type", metadata.type)
-		fmt.println("length", metadata.length)
+		fmt.println("  [metadata]")
+		fmt.println("    type", metadata.type)
+		fmt.println("    length", metadata.length)
+		fmt.print("    ")
 		#partial switch metadata.type {
 		case .FLAC__METADATA_TYPE_STREAMINFO:
 			fmt.println("stream_info", metadata.data.stream_info)
@@ -98,7 +100,8 @@ main :: proc() {
 	defer flac.FLAC__stream_decoder_delete(decoder)
 
 	ok: flac.FLAC__bool
-	flac_file := strings.clone_to_cstring(filepath.clean("../../data/audio/lossless-flac-44khz-16bit-stereo.flac", context.temp_allocator), context.temp_allocator)
+	clean_path, _ := filepath.clean("../../data/audio/lossless-flac-44khz-16bit-stereo.flac", context.temp_allocator)
+	flac_file := strings.clone_to_cstring(clean_path , context.temp_allocator)
 	fmt.println("flac_file:", flac_file)
 	fmt.println("version:", flac.FLAC__VERSION_STRING)
 	fmt.println("state:", flac.FLAC__stream_decoder_get_state(decoder))
